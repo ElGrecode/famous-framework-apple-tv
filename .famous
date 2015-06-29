@@ -1,0 +1,1 @@
+{"scripts":{"deploy-folder":"public/elgrecode:apple-tv","deploy":[["run","snapshot-component","--","-n","elgrecode:apple-tv"]],"setup":[["install"],["run","local-only-bootstrap","--","--watchAfterBuild=no"]]}}
