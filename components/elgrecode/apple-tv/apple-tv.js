@@ -4,6 +4,7 @@ FamousFramework.component('elgrecode:apple-tv', {
 
           '#root':{
               'style':{ // remove background color! set it in the CSS instead
+                  'background-color': '#333',
                   'perspective':'1000px'
               }
             },
@@ -28,6 +29,9 @@ FamousFramework.component('elgrecode:apple-tv', {
                 'background-color': 'blue',
                 'border':'2px solid black'
             },
+            'content': function($index, srcs){
+                return `<img src="${ srcs[$index] }" style="height:100px;width:100px"/>`
+            },
             '$repeat':function(srcs){
                 return srcs  //repeat over srcs array
             },
@@ -48,9 +52,13 @@ FamousFramework.component('elgrecode:apple-tv', {
     events: {},              // ← all of our events go here
     states: {
       rotationValue: 0,   // value to rotate all of our images
-      srcs: [1,2,3,4],    // this will store the images srcs
+      srcs: imageData,    // this will store the images srcs
       contextSize: 500,   // define the gallery's size here
       positionZ:[]        // store our images' Z positions here
     },
     tree: 'apple-tv.html'  // ← we reference our tree here
-  })
+  }).config({
+     includes: [
+         'galleryData.js'
+     ]
+});
