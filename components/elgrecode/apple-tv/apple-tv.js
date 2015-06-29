@@ -15,9 +15,6 @@ FamousFramework.component('elgrecode:apple-tv', {
             'align': [0.5,0.5],
             'mount-point':[0.5,0.5],
             'origin':[0.5,0.5], //center the origin so it rotates around its middle
-            'style': {
-                'background': 'red'
-            },
             'rotation': function(rotationValue){ // this will drive Z rotation animations
                 //rotate backwards and listen for Z rotation changes
                 return [-Math.PI/2.1, 0, rotationValue]
@@ -25,10 +22,6 @@ FamousFramework.component('elgrecode:apple-tv', {
         },
         '.gallery-item':{
             'size': [100,100],
-            'style':{
-                'background-color': 'blue',
-                'border':'2px solid black'
-            },
             'content': function($index, srcs){
                 return `<img src="${ srcs[$index] }" style="height:100px;width:100px"/>`
             },
@@ -49,12 +42,38 @@ FamousFramework.component('elgrecode:apple-tv', {
 
     },
 
-    events: {},              // ← all of our events go here
+    events: {
+    '$lifecycle': {
+        'post-load': function($state, $famousNode){
+            //add a component with an `onUpdate()` method
+            var id = $famousNode.addComponent({
+                onUpdate: function(time) {
+                    //go through all 'positionZ' values
+                    for(var i=0; i < $state.get('srcs').length; i++ ){
+                        // get current value
+                        var currentZ = $state.get(['positionZ',i]);
+                        // if image is out of screen move it back to bottom
+                        if(currentZ < -$state.get('contextSize')){
+                            currentZ = $state.get('contextSize')+100;
+                        }
+                        // set new decremented value
+                        $state.set(['positionZ',i], currentZ-1);
+                    }
+                    //add self to the update queue and create loop
+                    $famousNode.requestUpdateOnNextTick(id);
+                }
+            });
+            //start the loop
+            $famousNode.requestUpdateOnNextTick(id);
+            }
+        }
+    },
+
     states: {
       rotationValue: 0,   // value to rotate all of our images
       srcs: imageData,    // this will store the images srcs
       contextSize: 500,   // define the gallery's size here
-      positionZ:[]        // store our images' Z positions here
+      positionZ: randomCoordinates(imageData)        // store our images' Z positions here
     },
     tree: 'apple-tv.html'  // ← we reference our tree here
   }).config({
